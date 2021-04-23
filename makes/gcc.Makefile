@@ -34,6 +34,7 @@ final-configure:
 			--prefix=$(INSTALL_DIR) \
 			--host=$(HOST) \
 			--target=avr \
+			--with-avrlibc \
 			--enable-languages=c,c++ \
 			--disable-nls \
 			--disable-libssp \
@@ -62,7 +63,16 @@ final-install: final-build
 	echo "Installing final"
 	make install-strip
 
+final-build-gcc-only: final-configure
+	echo "Building final"
+	make -j12 all-host
+
+final-install-gcc-only: final-build-gcc-only
+	echo "Installing final"
+	make install-strip-host
+
 final: final-install
+final-gcc-only: final-install-gcc-only
 
 env:
 	@export

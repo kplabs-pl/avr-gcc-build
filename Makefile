@@ -37,6 +37,8 @@ STAGE1_TOOLCHAIN=$(INSTALL_DIR)/stage1
 HOST_LINUX=x86_64-pc-linux-gnu
 HOST_WIN64=x86_64-w64-mingw32
 
+WIN64_LIBS=/usr/x86_64-w64-mingw32/bin
+
 help:
 	@echo avr-gcc build script
 
@@ -141,7 +143,7 @@ gcc-win64:
 	cp -R $(BINUTILS_INSTALL_LINUX)/* $(STAGE1_TOOLCHAIN)
 	cp -R $(GCC_STAGE1_INSTALL_LINUX)/* $(STAGE1_TOOLCHAIN)
 
-	@echo "Building GCC final (Linux)"
+	@echo "Building GCC final (Windows)"
 	@mkdir -p $(GCC_FINAL_BUILD_WIN64)
 	@mkdir -p $(GCC_FINAL_INSTALL_WIN64)
 	@cp -R $(AVR_LIBC_INSTALL)/* $(GCC_FINAL_INSTALL_WIN64)
@@ -152,7 +154,38 @@ gcc-win64:
 	@echo "HOST=$(HOST_WIN64)"                           >> $(GCC_FINAL_BUILD_WIN64)/_script.Makefile
 	@cat ./makes/gcc.Makefile                            >> $(GCC_FINAL_BUILD_WIN64)/_script.Makefile
 	
-	make -C $(GCC_FINAL_BUILD_WIN64) -f _script.Makefile final
+	make -C $(GCC_FINAL_BUILD_WIN64) -f _script.Makefile final-gcc-only
+
+toolchain-linux:
+	@echo "Creating final Linux toolchain"
+	@mkdir -p $(INSTALL_LINUX)
+	@rm -rf $(INSTALL_LINUX)/*
+	cp -R $(GCC_FINAL_INSTALL_LINUX)/* $(INSTALL_LINUX)
+	cp -R $(AVR_LIBC_INSTALL)/* $(INSTALL_LINUX)
+	cp -R $(BINUTILS_INSTALL_LINUX)/* $(INSTALL_LINUX)
+
+toolchain-win64:
+	@echo "Creating final Win64 toolchain"
+	@mkdir -p $(INSTALL_WIN64)
+	@rm -rf $(INSTALL_WIN64)/*
+	cp -R $(GCC_FINAL_INSTALL_WIN64)/* $(INSTALL_WIN64)
+	cp -R $(AVR_LIBC_INSTALL)/* $(INSTALL_WIN64)
+	cp -R $(BINUTILS_INSTALL_WIN64)/* $(INSTALL_WIN64)
+	
+	cp -R $(GCC_FINAL_INSTALL_LINUX)/lib/* $(INSTALL_WIN64)/lib/
+	cp -R $(GCC_FINAL_INSTALL_LINUX)/avr/* $(INSTALL_WIN64)/avr/
+
+# lib, include, include/c++, lib/gcc/avr
+	
+	@cp -v $(WIN64_LIBS)/libgcc_s_seh-1.dll $(INSTALL_WIN64)/libexec/gcc/avr/10.3.0
+	@cp -v $(WIN64_LIBS)/libgmp-10.dll $(INSTALL_WIN64)/libexec/gcc/avr/10.3.0
+	@cp -v $(WIN64_LIBS)/libmpc-3.dll $(INSTALL_WIN64)/libexec/gcc/avr/10.3.0
+	@cp -v $(WIN64_LIBS)/libmpfr-6.dll $(INSTALL_WIN64)/libexec/gcc/avr/10.3.0
+	@cp -v $(WIN64_LIBS)/libssp-0.dll $(INSTALL_WIN64)/libexec/gcc/avr/10.3.0
+	@cp -v $(WIN64_LIBS)/libwinpthread-1.dll $(INSTALL_WIN64)/libexec/gcc/avr/10.3.0
+	@cp -v $(WIN64_LIBS)/libwinpthread-1.dll $(INSTALL_WIN64)/bin
+	@cp -v $(WIN64_LIBS)/libstdc++-6.dll $(INSTALL_WIN64)/bin
+	tar cjf $(INSTALL_WIN64_DIR)/avr-gcc-10-win64.tar.gz -C $(INSTALL_WIN64) .
 
 # Generowaie Makefile z wartościami
 # Build combined toolchain (linux)
