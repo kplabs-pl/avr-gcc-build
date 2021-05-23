@@ -18,7 +18,7 @@ configure:
 
 build: configure
 	@echo "Building"
-	make -j5
+	make -j20
 
 install: build
 	@echo "Installing"

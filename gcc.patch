@@ -1,3 +1,28 @@
+diff -ur ../../tars/gcc-10.3.0/gcc/config/avr/avr.h ./gcc/config/avr/avr.h
+--- ../../tars/gcc-10.3.0/gcc/config/avr/avr.h	2021-04-08 13:56:28.069740678 +0200
++++ ./gcc/config/avr/avr.h	2021-05-23 19:42:40.441523596 +0200
+@@ -526,9 +526,6 @@
+   " %:double-lib(%{m*:m%*})"                            \
+   " %:device-specs-file(device-specs%s %{mmcu=*:%*})"
+ 
+-/* No libstdc++ for now.  Empty string doesn't work.  */
+-#define LIBSTDCXX "gcc"
+-
+ /* This is the default without any -mmcu=* option.  */
+ #define MULTILIB_DEFAULTS { "mmcu=" AVR_MMCU_DEFAULT }
+ 
+diff -ur ../../tars/gcc-10.3.0/libiberty/cplus-dem.c ./libiberty/cplus-dem.c
+--- ../../tars/gcc-10.3.0/libiberty/cplus-dem.c	2021-04-08 13:56:30.149765794 +0200
++++ ./libiberty/cplus-dem.c	2021-05-23 17:38:08.702161216 +0200
+@@ -129,7 +129,7 @@
+ {
+   const struct demangler_engine *demangler = libiberty_demanglers; 
+ 
+-  for (; demangler->demangling_style != unknown_demangling; ++demangler)
++  for (; demangler->demangling_style != unknown_demangling; ++demangler) 
+     if (strcmp (name, demangler->demangling_style_name) == 0)
+       return demangler->demangling_style;
+ 
 diff -ur ../../tars/gcc-10.3.0/libstdc++-v3/aclocal.m4 ./libstdc++-v3/aclocal.m4
 --- ../../tars/gcc-10.3.0/libstdc++-v3/aclocal.m4	2021-04-08 13:56:30.269767244 +0200
 +++ ./libstdc++-v3/aclocal.m4	2021-04-23 08:20:49.214897650 +0200

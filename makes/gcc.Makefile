@@ -16,7 +16,7 @@ stage1-configure:
 
 stage1-build: stage1-configure
 	@echo  "Building stage1"
-	make -j9
+	make -j20
 
 stage1-install: stage1-build
 	@echo "Installing stage1"
@@ -57,7 +57,7 @@ final-configure:
 
 final-build: final-configure
 	echo "Building final"
-	make -j12
+	make -j20
 
 final-install: final-build
 	echo "Installing final"
@@ -65,7 +65,7 @@ final-install: final-build
 
 final-build-gcc-only: final-configure
 	echo "Building final"
-	make -j12 all-host
+	make -j20 all-host
 
 final-install-gcc-only: final-build-gcc-only
 	echo "Installing final"
