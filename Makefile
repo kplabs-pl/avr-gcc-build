@@ -29,6 +29,12 @@ AVR_LIBC_SRC=$(SRC_DIR)/avr-libc-2.0.0
 AVR_LIBC_BUILD=$(BUILD_DIR)/avr-libc
 AVR_LIBC_INSTALL=$(INSTALL_DIR)/avr-libc
 
+GDB_SRC=$(SRC_DIR)/gdb-10.2
+GDB_BUILD_LINUX=$(BUILD_LINUX_DIR)/gdb
+GDB_BUILD_WIN64=$(BUILD_WIN64_DIR)/gdb
+GDB_INSTALL_LINUX=$(INSTALL_LINUX_DIR)/gdb
+GDB_INSTALL_WIN64=$(INSTALL_WIN64_DIR)/gdb
+
 INSTALL_LINUX=$(INSTALL_LINUX_DIR)/combined
 INSTALL_WIN64=$(INSTALL_WIN64_DIR)/combined
 
@@ -156,6 +162,28 @@ gcc-win64:
 	
 	make -C $(GCC_FINAL_BUILD_WIN64) -f _script.Makefile final-gcc-only
 
+gdb-linux:
+	@echo "Building gdb (Linux)"
+	@mkdir -p $(GDB_BUILD_LINUX)
+	
+	@echo "SRC=$(GDB_SRC)"                   >  $(GDB_BUILD_LINUX)/_script.Makefile
+	@echo "INSTALL_DIR=$(GDB_INSTALL_LINUX)" >> $(GDB_BUILD_LINUX)/_script.Makefile
+	@echo "HOST=$(HOST_LINUX)"               >> $(GDB_BUILD_LINUX)/_script.Makefile
+	@cat ./makes/gdb.Makefile                >> $(GDB_BUILD_LINUX)/_script.Makefile
+	
+	@make -C $(GDB_BUILD_LINUX) -f _script.Makefile
+
+gdb-win64:
+	@echo "Building gdb (Win64)"
+	@mkdir -p $(GDB_BUILD_WIN64)
+
+	@echo "SRC=$(GDB_SRC)"                   >  $(GDB_BUILD_WIN64)/_script.Makefile
+	@echo "INSTALL_DIR=$(GDB_INSTALL_WIN64)" >> $(GDB_BUILD_WIN64)/_script.Makefile
+	@echo "HOST=$(HOST_WIN64)"               >> $(GDB_BUILD_WIN64)/_script.Makefile
+	@cat ./makes/gdb.Makefile                >> $(GDB_BUILD_WIN64)/_script.Makefile
+
+	@make -C $(GDB_BUILD_WIN64) -f _script.Makefile
+
 toolchain-linux:
 	@echo "Creating final Linux toolchain"
 	@mkdir -p $(INSTALL_LINUX)
@@ -163,6 +191,7 @@ toolchain-linux:
 	cp -R $(GCC_FINAL_INSTALL_LINUX)/* $(INSTALL_LINUX)
 	cp -R $(AVR_LIBC_INSTALL)/* $(INSTALL_LINUX)
 	cp -R $(BINUTILS_INSTALL_LINUX)/* $(INSTALL_LINUX)
+	cp -R $(GDB_INSTALL_LINUX)/* $(INSTALL_LINUX)
 
 toolchain-win64:
 	@echo "Creating final Win64 toolchain"
@@ -171,11 +200,10 @@ toolchain-win64:
 	cp -R $(GCC_FINAL_INSTALL_WIN64)/* $(INSTALL_WIN64)
 	cp -R $(AVR_LIBC_INSTALL)/* $(INSTALL_WIN64)
 	cp -R $(BINUTILS_INSTALL_WIN64)/* $(INSTALL_WIN64)
+	cp -R $(GDB_INSTALL_WIN64)/* $(INSTALL_WIN64)
 	
 	cp -R $(GCC_FINAL_INSTALL_LINUX)/lib/* $(INSTALL_WIN64)/lib/
 	cp -R $(GCC_FINAL_INSTALL_LINUX)/avr/* $(INSTALL_WIN64)/avr/
-
-# lib, include, include/c++, lib/gcc/avr
 	
 	@cp -v $(WIN64_LIBS)/libgcc_s_seh-1.dll $(INSTALL_WIN64)/libexec/gcc/avr/10.3.0
 	@cp -v $(WIN64_LIBS)/libgmp-10.dll $(INSTALL_WIN64)/libexec/gcc/avr/10.3.0
@@ -185,9 +213,8 @@ toolchain-win64:
 	@cp -v $(WIN64_LIBS)/libwinpthread-1.dll $(INSTALL_WIN64)/libexec/gcc/avr/10.3.0
 	@cp -v $(WIN64_LIBS)/libwinpthread-1.dll $(INSTALL_WIN64)/bin
 	@cp -v $(WIN64_LIBS)/libstdc++-6.dll $(INSTALL_WIN64)/bin
+	@cp -v $(WIN64_LIBS)/libmpfr-6.dll $(INSTALL_WIN64)/bin
+	@cp -v $(WIN64_LIBS)/libgcc_s_seh-1.dll $(INSTALL_WIN64)/bin
+	@cp -v $(WIN64_LIBS)/libgmp-10.dll $(INSTALL_WIN64)/bin
+	@cp -v $(WIN64_LIBS)/libssp-0.dll $(INSTALL_WIN64)/bin
 	tar cjf $(INSTALL_WIN64_DIR)/avr-gcc-10-win64.tar.gz -C $(INSTALL_WIN64) .
-
-# Generowaie Makefile z wartościami
-# Build combined toolchain (linux)
-# Build combined toolchain (Windows)
-# 	Win64 - kopiowanie .dllek
